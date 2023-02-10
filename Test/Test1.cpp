@@ -1,15 +1,13 @@
 #include <cstdio>
+#include "CmdUi/Context.h"
+#include "CmdUi/PlatformFile.h"
 #include "gtest/gtest.h"
 #include "TestDirectory.h"
 
 GTEST_TEST(Test1, AlwaysTrue)
 {
-    puts(ABSOLUTE_TEST_DIRECTORY);
-    puts(GetTestFilePath("inp.ans"));
-    EXPECT_EQ(1, 1);
-}
-
-GTEST_TEST(Test1, AlwaysFalse)
-{
-    EXPECT_NE(1, 0);
+    Rt2::CmdUi::Context ctx(new Rt2::CmdUi::PlatformFile(GetTestFilePath("test_001.txt")));
+    ctx.clear();
+    ctx.rectangle(1, 1, 20, 5);
+    ctx.flush();
 }
