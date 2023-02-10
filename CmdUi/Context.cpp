@@ -39,13 +39,13 @@ namespace Rt2::CmdUi
 #ifdef WIN32
         _platform(new PlatformWin32())
 #else
-        _platform(PlatformUnix())
+        _platform(new PlatformUnix())
 #endif
 
     {
         initializePalette();
         initialize();
-        reset();
+        resetMode();
     }
 
     Context::Context(Platform* other) :
@@ -53,7 +53,7 @@ namespace Rt2::CmdUi
     {
         initializePalette();
         initialize();
-        reset();
+        resetMode();
     }
 
     Context::~Context()
@@ -125,13 +125,13 @@ namespace Rt2::CmdUi
 
     void Context::initialize()
     {
-        Point sz;
+        Vec2I sz;
         _platform->screenSizeHint(sz);
 
         resizeBuffers(sz);
     }
 
-    void Context::resizeBuffers(const Point& newSize)
+    void Context::resizeBuffers(const Vec2I& newSize)
     {
         if (_frameBuffer != nullptr)
         {
@@ -156,15 +156,15 @@ namespace Rt2::CmdUi
         _colorBuffer = new ColorBuffer[_capacity + 2];
 
         clear();
-        std::setvbuf(stdout, nullptr, _IOFBF, _capacity);
+        _platform->buffersResized(_capacity);
     }
 
-    void Context::insertCharacter(const char ch, int x, int y) const
+    void Context::insertCharacter(const char ch, const int x, const int y) const
     {
         if (x < _size.x && y < _size.y)
         {
-            const size_t loc = (size_t)y * (size_t)_pitch + (size_t)x;
-            if (loc < _capacity)
+            if (const size_t loc = (size_t)y * (size_t)_pitch + (size_t)x; 
+                loc < _capacity)
             {
                 _frameBuffer[loc]      = ch;
                 _colorBuffer[loc].b[0] = (uint8_t)_color.x;
@@ -180,7 +180,7 @@ namespace Rt2::CmdUi
         insertCharacter(ch, x, y);
     }
 
-    void Context::character(char ch, const Point& pt) const
+    void Context::character(const char ch, const Vec2I& pt) const
     {
         character(ch, pt.x, pt.y);
     }
@@ -189,7 +189,7 @@ namespace Rt2::CmdUi
                          int           x,
                          int           y) const
     {
-        for (char ch : str)
+        for (const char ch : str)
         {
             if (ch == '\t')
                 x += 4;
@@ -200,12 +200,12 @@ namespace Rt2::CmdUi
         }
     }
 
-    void Context::string(const String& str, const Point& pt) const
+    void Context::string(const String& str, const Vec2I& pt) const
     {
         string(str, pt.x, pt.y);
     }
 
-    void Context::integer(const uint32_t& val, int x, int y, int width) const
+    void Context::integer(const uint32_t& val, const int x, const int y, const int width) const
     {
         OutputStringStream ss;
         if (width != -1)
@@ -215,29 +215,28 @@ namespace Rt2::CmdUi
         string(ss.str(), x, y);
     }
 
-    void Context::line(int x,
-                       int y,
-                       int length,
-                       int orientation) const
+    void Context::line(int       x,
+                       int       y,
+                       const int d,
+                       const int o) const
     {
-        if (orientation == OR_HORIZONTAL)
+        if (o == OR_HORIZONTAL)
         {
-            const int l = Clamp(length, 0, _size.x);
-
-            for (int i = 0; i < l; ++i)
-                insertCharacter(CS_RECT_HZ, x++, y);
+            const int l = Clamp(d, 0, _size.x);
+            for (int i = 0; i < l; ++i, ++x)
+                insertCharacter(CS_RECT_HZ, x, y);
         }
-        else if (orientation == OR_VERTICAL)
+        else if (o == OR_VERTICAL)
         {
-            const int l = Clamp(length, 0, _size.y);
-            for (int i = 0; i < l; ++i)
-                insertCharacter(CS_RECT_VT, x, y++);
+            const int l = Clamp(d, 0, _size.y);
+            for (int i = 0; i < l; ++i, ++y)
+                insertCharacter(CS_RECT_VT, x, y);
         }
     }
 
-    void Context::line(const Point& pt, int length, int orientation) const
+    void Context::line(const Vec2I& pt, const int d, const int o) const
     {
-        line(pt.x, pt.y, length, orientation);
+        line(pt.x, pt.y, d, o);
     }
 
     void Context::rectangle(const int x,
@@ -245,20 +244,20 @@ namespace Rt2::CmdUi
                             const int w,
                             const int h) const
     {
-        Rectangle r{x, y, w - 1, h - 1};
+        const RectI r{x, y, w, h};
 
-        line(r.left(), r.top(), r.w, OR_HORIZONTAL);
-        line(r.left(), r.top(), r.h, OR_VERTICAL);
-        line(r.left(), r.bottom(), r.w, OR_HORIZONTAL);
-        line(r.right(), r.top(), r.h, OR_VERTICAL);
+        line(r.x1(), r.y1(), r.w, OR_HORIZONTAL);
+        line(r.x1(), r.y1(), r.h, OR_VERTICAL);
+        line(r.x1(), r.y2(), r.w, OR_HORIZONTAL);
+        line(r.x2(), r.y1(), r.h, OR_VERTICAL);
 
-        character(CS_RECT_LT, r.left(), r.top());
-        character(CS_RECT_RT, r.right(), r.top());
-        character(CS_RECT_RB, r.right(), r.bottom());
-        character(CS_RECT_LB, r.left(), r.bottom());
+        character(CS_RECT_LT, r.x1(), r.y1());
+        character(CS_RECT_RT, r.x2(), r.y1());
+        character(CS_RECT_RB, r.x2(), r.y2());
+        character(CS_RECT_LB, r.x1(), r.y2());
     }
 
-    void Context::rectangle(const Rectangle& rect) const
+    void Context::rectangle(const RectI& rect) const
     {
         rectangle(rect.x, rect.y, rect.w, rect.h);
     }
@@ -275,10 +274,10 @@ namespace Rt2::CmdUi
             _workingPath.push_back({x, y});
         else
         {
-            Point a = _workingPath.back();
-            Point b = {x, y};
+            Vec2I a = _workingPath.back();
+            Vec2I b = {x, y};
 
-            const Point c = a.maxPoint(b);
+            const Vec2I c = a.maxPoint(b);
 
             b = a.minPoint(b);
             a = c;
@@ -291,11 +290,11 @@ namespace Rt2::CmdUi
         }
     }
 
-    void Context::addSegment(char ch)
+    void Context::addSegment(const char ch) const
     {
         if (!_workingPath.empty())
         {
-            Point& pt = _workingPath.back();
+            const Vec2I& pt = _workingPath.back();
             character(ch, pt.x, pt.y);
         }
     }
@@ -305,7 +304,7 @@ namespace Rt2::CmdUi
         _workingPath.clear();
     }
 
-    void Context::reset()
+    void Context::resetMode()
     {
         _useExtended = false;
         _color       = {CP_TRANSPARENT, CP_TRANSPARENT};
@@ -322,7 +321,7 @@ namespace Rt2::CmdUi
 
         if (result == PR_RESIZE)
         {
-            Point sz;
+            Vec2I sz;
             _platform->screenSizeHint(sz);
             resizeBuffers(sz);
         }

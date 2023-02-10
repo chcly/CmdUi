@@ -20,20 +20,17 @@
 # ------------------------------------------------------------------------------
 set(TestTargetName ${TargetName}Test)
 
-set(TestTarget_SOURCE
-    Test1.cpp
-)
+include(GroupSet)
+include(TestDirectory)
+gen_path_to_here()
 
-set(ABSOLUTE_TEST_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/TestDirectory.h.in
-	${CMAKE_CURRENT_BINARY_DIR}/TestDirectory.h
+set_group(TestTarget_SOURCE
+    Source:*.cpp
+    Files:Test_*.txt
 )
 
 include_directories(
     ${GTEST_INCLUDE} 
-    ${CMAKE_CURRENT_BINARY_DIR} 
     ${CmdUi_INCLUDE} 
     ${Utils_INCLUDE} 
 )

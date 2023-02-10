@@ -20,9 +20,8 @@
 -------------------------------------------------------------------------------
 */
 #ifdef WIN32
-
-#include <iostream>
 #include "CmdUi/PlatformWin32.h"
+#include <iostream>
 #include "CmdUi/Common.h"
 
 namespace Rt2::CmdUi
@@ -61,22 +60,22 @@ namespace Rt2::CmdUi
         current &= ~ENABLE_ECHO_INPUT;
         SetConsoleMode(_stdin, current);
 
-        // clang-format off
-        SetConsoleCtrlHandler([](const DWORD evt)
-                              {
-                                  switch (evt)
-                                  {
-                                  case CTRL_C_EVENT:
-                                  case CTRL_BREAK_EVENT:
-                                  case CTRL_CLOSE_EVENT:
-                                      Hook = true;[[fallthrough]];
-                                  default:
-                                      break;
-                                  }
-                                  return Hook ? TRUE : FALSE;
-                              },
-                              TRUE);
-        // clang-format on
+        SetConsoleCtrlHandler(
+            [](const DWORD evt)
+            {
+                switch (evt)
+                {
+                case CTRL_C_EVENT:
+                case CTRL_BREAK_EVENT:
+                case CTRL_CLOSE_EVENT:
+                    Hook = true;
+                    [[fallthrough]];
+                default:
+                    break;
+                }
+                return Hook ? TRUE : FALSE;
+            },
+            TRUE);
         clear();
         useBackBuffer(true);
         flush();
@@ -90,7 +89,7 @@ namespace Rt2::CmdUi
         SetConsoleMode(_stdin, _inputMode);
     }
 
-    void PlatformWin32::screenSizeHint(Point& sz)
+    void PlatformWin32::screenSizeHint(Vec2I& sz)
     {
         sz = {0, 0};
 
@@ -123,8 +122,8 @@ namespace Rt2::CmdUi
                 {
                     if (cur.EventType == KEY_EVENT)
                     {
-                        const int evt = ProcessKey(cur.Event.KeyEvent);
-                        if (evt != PR_NO_INPUT)
+                        if (const int evt = ProcessKey(cur.Event.KeyEvent); 
+                            evt != PR_NO_INPUT)
                             return evt;
                     }
                 }
@@ -170,5 +169,5 @@ namespace Rt2::CmdUi
 
         return PR_NO_INPUT;
     }
-} // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi
 #endif

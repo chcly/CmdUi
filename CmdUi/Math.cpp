@@ -24,6 +24,22 @@
 
 namespace Rt2::CmdUi
 {
+    Vec2I Vec2I::maxPoint(const Vec2I& rhs) const
+    {
+        return {
+            std::max<int>(x, rhs.x),
+            std::max<int>(y, rhs.y),
+        };
+    }
+
+    Vec2I Vec2I::minPoint(const Vec2I& rhs) const
+    {
+        return {
+            std::min<int>(x, rhs.x),
+            std::min<int>(y, rhs.y),
+        };
+    }
+
     const char* Color::extractSequence(const char* buf) const
     {
         const ColorU u(Rgb);
@@ -38,5 +54,15 @@ namespace Rt2::CmdUi
             0,
             31)] = 0;
         return _scratch;
+    }
+
+    const char* Color::foreground() const
+    {
+        return extractSequence(RgbFormatFg);
+    }
+
+    const char* Color::background() const
+    {
+        return extractSequence(RgbFormatBg);
     }
 } // namespace Rt2::Ui

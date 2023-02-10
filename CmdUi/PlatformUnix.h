@@ -21,18 +21,19 @@
 */
 #pragma once
 #ifndef WIN32
-#include <termios.h>
-#include "CmdUi/Platform.h"
+    #include <termios.h>
+    #include "CmdUi/Math.h"
+    #include "CmdUi/Platform.h"
 
 struct termios;
 
-namespace Rt2::Ui
+namespace Rt2::CmdUi
 {
     class PlatformUnix final : public Platform
     {
     private:
         class Terminal* _term;
-        Point           _size;
+        Vec2I           _size;
         String          _message;
 
         void saveState();
@@ -51,10 +52,10 @@ namespace Rt2::Ui
         PlatformUnix();
         ~PlatformUnix() override;
 
-        void getScreenSize(Point& sz) override;
+        void screenSizeHint(Vec2I& sz) override;
 
         int poll(bool block) override;
     };
 
-}  // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi
 #endif

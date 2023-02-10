@@ -21,32 +21,89 @@
 */
 #include "CmdUi/PlatformFile.h"
 #include "CmdUi/Math.h"
+#include "Utils/Char.h"
 
 namespace Rt2::CmdUi
 {
-    PlatformFile::PlatformFile(const String& name)
-        : _ofs(new OutputFileStream(name, std::ios::binary))
+    PlatformFile::PlatformFile(const String& name) :
+        _ofs(new OutputFileStream(name, std::ios::binary))
     {
+        if (!_ofs->is_open())
+            close();
     }
 
     PlatformFile::~PlatformFile()
+    {
+        close();
+    }
+
+    void PlatformFile::screenSizeHint(Vec2I& sz)
+    {
+        sz = _size;
+    }
+
+    void PlatformFile::put(const char ch)
+    {
+        if (_ofs)
+        {
+            _ofs->put(ch);
+            if (_writes % _size.x == _size.x - 1)
+                _ofs->put('\n');
+            ++_writes;
+        }
+    }
+
+    void PlatformFile::put(const char* ch)
+    {
+        const size_t len = Char::length(ch);
+        for (size_t i = 0; i < len; ++i)
+            PlatformFile::put(ch);
+    }
+
+    void PlatformFile::flush()
+    {
+        if (_ofs)
+        {
+            _writes = 0;
+            _ofs->seekp(0, std::ios::beg);
+        }
+    }
+
+    int PlatformFile::poll(bool block)
+    {
+        // stub, undefined usage for files
+        return -1;
+    }
+
+    void PlatformFile::showCursor(bool show)
+    {
+        // stub, undefined usage for files
+    }
+
+    void PlatformFile::useBackBuffer(bool use)
+    {
+        // stub, undefined usage for files
+    }
+
+    void PlatformFile::setCursor(int16_t x, int16_t y)
+    {
+        // stub, undefined usage for files
+    }
+
+    void PlatformFile::resetCursor()
+    {
+        // stub, undefined usage for files
+    }
+
+    void PlatformFile::close()
     {
         delete _ofs;
         _ofs = nullptr;
     }
 
-    void PlatformFile::screenSizeHint(Point& sz)
+    void PlatformFile::setScreenSize(int w, int h)
     {
-        sz = {80, 20};
+        _size = {w, h};
     }
 
-    void PlatformFile::put(char ch)
-    {
-        _ofs->put(ch);
-    }
-
-    void PlatformFile::flush()
-    {
-        _ofs->seekp(0, std::ios::beg);
-    }
 }  // namespace Rt2::CmdUi

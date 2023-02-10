@@ -31,18 +31,34 @@ namespace Rt2::CmdUi
     class PlatformFile final : public Platform
     {
     private:
-        OutputFileStream *_ofs{nullptr};
-
+        OutputFileStream* _ofs{nullptr};
+        int               _writes{0};
+        Vec2I             _size{80, 20};
 
     public:
         explicit PlatformFile(const String& name);
         ~PlatformFile() override;
 
-        void screenSizeHint(Point& sz) override;
-
-        int  poll(bool block) override { return -1; }
+        void screenSizeHint(Vec2I& sz) override;
+        void setScreenSize(int w, int h);
 
         void put(char ch) override;
+
+        void put(const char* ch) override;
+
         void flush() override;
+
+        int poll(bool block) override;
+
+        void showCursor(bool show) override;
+
+        void useBackBuffer(bool use) override;
+
+        void setCursor(int16_t x, int16_t y) override;
+
+        void resetCursor() override;
+
+        void  close();
+
     };
 }  // namespace Rt2::CmdUi

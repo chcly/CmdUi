@@ -26,99 +26,56 @@
 
 namespace Rt2::CmdUi
 {
-    class Point
+    class Vec2I
     {
     public:
         int x{}, y{};
 
     public:
-        Point()                 = default;
-        Point(const Point& oth) = default;
-
-        Point(const int& nx, const int& ny) :
-            x(nx),
-            y(ny)
+        Vec2I()                 = default;
+        Vec2I(const Vec2I& oth) = default;
+        Vec2I(const int& nx, const int& ny) :
+            x(nx), y(ny)
         {
         }
 
-        Point maxPoint(const Point& rhs) const
-        {
-            return {
-                std::max<int>(x, rhs.x),
-                std::max<int>(y, rhs.y),
-            };
-        }
-
-        Point minPoint(const Point& rhs) const
-        {
-            return {
-                std::min<int>(x, rhs.x),
-                std::min<int>(y, rhs.y),
-            };
-        }
+        Vec2I maxPoint(const Vec2I& rhs) const;
+        Vec2I minPoint(const Vec2I& rhs) const;
     };
 
-    using Path = std::vector<Point>;
+    using Path = std::vector<Vec2I>;
 
-    class Rectangle
+    class RectI
     {
     public:
         int x{}, y{}, w{}, h{};
 
     public:
-        Rectangle()                     = default;
-        Rectangle(const Rectangle& oth) = default;
-
-        Rectangle(const int& nx,
-                  const int& ny,
-                  const int& nw,
-                  const int& nh) :
-            x(nx),
-            y(ny),
-            w(nw),
-            h(nh)
+        RectI()                 = default;
+        RectI(const RectI& oth) = default;
+        RectI(const int& nx,
+              const int& ny,
+              const int& nw,
+              const int& nh) :
+            x(nx), y(ny), w(nw), h(nh)
         {
         }
 
-        int left() const
-        {
-            return x;
-        }
+        int x1() const;
 
-        int right() const
-        {
-            return x + w;
-        }
+        int x2() const;
 
-        int midX() const
-        {
-            return x + (w >> 1);
-        }
+        int y1() const;
 
-        int top() const
-        {
-            return y;
-        }
+        int y2() const;
 
-        int bottom() const
-        {
-            return y + h;
-        }
+        int cx() const;
 
-        int midY() const
-        {
-            return y + (h >> 1);
-        }
+        int cy() const;
 
-        Point position() const
-        {
-            return {x, y};
-        }
+        Vec2I position() const;
 
-        Point size() const
-        {
-            return {w, h};
-        }
+        Vec2I size() const;
     };
 
     union ColorU
@@ -139,7 +96,7 @@ namespace Rt2::CmdUi
         {
         }
 
-        explicit operator int() const
+        explicit operator uint32_t() const
         {
             return i;
         }
@@ -172,29 +129,58 @@ namespace Rt2::CmdUi
         Color(const uint8_t r,
               const uint8_t g,
               const uint8_t b) :
-            Rgb((int)ColorU(r, g, b))
+            Rgb(ColorU(r, g, b))
         {
         }
 
-        const char* foreground() const
-        {
-            return extractSequence(RgbFormatFg);
-        }
+        const char* foreground() const;
 
-        const char* background() const
-        {
-            return extractSequence(RgbFormatBg);
-        }
+        const char* background() const;
     };
 
-    inline int Clamp(const int& in,
-                     const int& start,
-                     const int& end)
+    inline int Clamp(const int& x, const int& a, const int& b)
     {
-        return in < start
-                   ? start
-                   : in > end
-                   ? end
-                   : in;
+        return x < a ? a : (x > b ? b : x);
     }
-} // namespace Rt2::Ui
+
+    inline int RectI::x1() const
+    {
+        return x;
+    }
+
+    inline int RectI::x2() const
+    {
+        return x + w;
+    }
+
+    inline int RectI::y1() const
+    {
+        return y;
+    }
+
+    inline int RectI::y2() const
+    {
+        return y + h;
+    }
+
+    inline int RectI::cx() const
+    {
+        return x + (w >> 1);
+    }
+
+    inline int RectI::cy() const
+    {
+        return y + (h >> 1);
+    }
+
+    inline Vec2I RectI::position() const
+    {
+        return {x, y};
+    }
+
+    inline Vec2I RectI::size() const
+    {
+        return {w, h};
+    }
+
+}  // namespace Rt2::CmdUi

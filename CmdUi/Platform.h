@@ -65,7 +65,9 @@ namespace Rt2::CmdUi
         Platform();
         virtual ~Platform();
 
-        virtual void screenSizeHint(Point& sz) = 0;
+        virtual void screenSizeHint(Vec2I& sz) = 0;
+
+        virtual void buffersResized(size_t size);
 
         virtual int poll(bool block) = 0;
 

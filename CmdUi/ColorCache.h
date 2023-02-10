@@ -39,4 +39,4 @@ namespace Rt2::CmdUi
         const char* foreground();
         const char* background();
     };
-} // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi

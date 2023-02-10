@@ -49,11 +49,11 @@ namespace Rt2::CmdUi
         CS_RECT_CB,
         CS_RECT_CT,
         CS_RECT_VT,
-        CS_SEQ_END, //< CS_START
+        CS_SEQ_END,  //< CS_START
 
         // printable
         CS_START = ' ',
-        CS_END = '~' + 1,
+        CS_END   = '~' + 1,
     };
 
     enum ColorPalette
@@ -139,4 +139,4 @@ namespace Rt2::CmdUi
         PR_ALT,
         PR_ESC,
     };
-} // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi

@@ -20,17 +20,17 @@
 -------------------------------------------------------------------------------
 */
 #ifndef WIN32
-#include "CmdUi/PlatformUnix.h"
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <termios.h>
-#include <unistd.h>
-#include <cassert>
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
+    #include "CmdUi/PlatformUnix.h"
+    #include <sys/ioctl.h>
+    #include <sys/select.h>
+    #include <termios.h>
+    #include <unistd.h>
+    #include <cassert>
+    #include <csignal>
+    #include <cstdio>
+    #include <cstdlib>
 
-namespace Rt2::Ui
+namespace Rt2::CmdUi
 {
     constexpr int StdInput  = 0;
     constexpr int StdOutput = 1;
@@ -198,7 +198,7 @@ namespace Rt2::Ui
         return false;
     }
 
-    void PlatformUnix::getScreenSize(Point& sz)
+    void PlatformUnix::screenSizeHint(Vec2I& sz)
     {
         checkSize();
         sz = _size;
@@ -313,6 +313,6 @@ namespace Rt2::Ui
         return PR_NO_INPUT;
     }
 
-}  // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi
 
 #endif

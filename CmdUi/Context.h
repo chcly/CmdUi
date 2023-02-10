@@ -20,17 +20,16 @@
 -------------------------------------------------------------------------------
 */
 #pragma once
-#include "Math.h"
-#include "Utils/String.h"
 #include "CmdUi/Common.h"
 #include "CmdUi/Math.h"
+#include "Utils/String.h"
 
 namespace Rt2::CmdUi
 {
     class Context final
     {
     private:
-        Point        _size{0,0};
+        Vec2I        _size{0, 0};
         size_t       _capacity{0};
         int          _pitch{0};
         char*        _frameBuffer{nullptr};
@@ -38,55 +37,45 @@ namespace Rt2::CmdUi
         uint16_t     _cbSize{0};
         uint16_t     _cbCap{0};
         uint32_t*    _colorMap{nullptr};
-        Point        _color{CP_TRANSPARENT, CP_TRANSPARENT};
+        Vec2I        _color{CP_TRANSPARENT, CP_TRANSPARENT};
         bool         _useExtended{false};
         Platform*    _platform{nullptr};
         Path         _workingPath{};
 
-        void initializePalette();
-
-        void putExtended(char ch) const;
-
-        void insertCharacter(char ch, int x, int y) const;
-
-        void resizeBuffers(const Point& newSize);
-
     public:
         Context();
-        explicit Context(Platform * other);
+        explicit Context(Platform* other);
         ~Context();
 
-        const Point& size() const;
+        const Vec2I& size() const;
 
         int width() const;
-
         int height() const;
 
         void initialize();
 
-        void useExtended(bool val);
-
-        void reset();
+        void useExtendedMode(bool val);
+        void resetMode();
 
         void clear(const char& ch = ' ') const;
 
         void character(char ch, int x, int y) const;
 
-        void character(char ch, const Point& pt) const;
+        void character(char ch, const Vec2I& pt) const;
 
         void string(const String& str, int x, int y) const;
 
-        void string(const String& str, const Point& pt) const;
+        void string(const String& str, const Vec2I& pt) const;
 
-        void integer(const uint32_t& val, int x, int y, int width=-1) const;
+        void integer(const uint32_t& val, int x, int y, int width = -1) const;
 
-        void line(int x, int y, int length, int orientation) const;
+        void line(int x, int y, int d, int o) const;
 
-        void line(const Point& pt, int length, int orientation) const;
+        void line(const Vec2I& pt, int d, int o) const;
 
         void rectangle(int x, int y, int w, int h) const;
 
-        void rectangle(const Rectangle& rect) const;
+        void rectangle(const RectI& rect) const;
 
         void flush() const;
 
@@ -104,19 +93,28 @@ namespace Rt2::CmdUi
 
         void lineTo(const int& x, const int& y, const int& ori);
 
-        void addSegment(char ch);
+        void addSegment(char ch) const;
 
         void clearPath();
 
         static void sleep(const uint32_t& ms);
+
+    private:
+        void initializePalette();
+
+        void putExtended(char ch) const;
+
+        void insertCharacter(char ch, int x, int y) const;
+
+        void resizeBuffers(const Vec2I& newSize);
     };
 
-    inline void Context::useExtended(const bool val)
+    inline void Context::useExtendedMode(const bool val)
     {
         _useExtended = val;
     }
 
-    inline const Point& Context::size() const
+    inline const Vec2I& Context::size() const
     {
         return _size;
     }
@@ -140,4 +138,4 @@ namespace Rt2::CmdUi
     {
         _color.y = idx;
     }
-} // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi

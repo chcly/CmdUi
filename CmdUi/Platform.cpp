@@ -20,9 +20,9 @@
 -------------------------------------------------------------------------------
 */
 #ifdef WIN32
-#include <Windows.h>
+    #include <Windows.h>
 #else
-#include <unistd.h>
+    #include <unistd.h>
 #endif
 #include <cstdio>
 #include "CmdUi/Platform.h"
@@ -36,15 +36,19 @@ namespace Rt2::CmdUi
         for (auto& [idx, item] : _cache)
             delete item;
 
-        std::setvbuf(stdout, nullptr, _IOLBF, 0x400);
+        (void)std::setvbuf(stdout, nullptr, _IOLBF, 0x400);
+    }
+
+    void Platform::buffersResized(const size_t size)
+    {
+        (void)std::setvbuf(stdout, nullptr, _IOFBF, size);
     }
 
     void Platform::color(uint8_t index, const uint32_t color, const bool background)
     {
         ColorCacheItem* item;
-
-        const ColorCache::iterator it = _cache.find(index);
-        if (it == _cache.end())
+        if (const ColorCache::iterator it = _cache.find(index);
+            it == _cache.end())
         {
             item = new ColorCacheItem(color);
             _cache.insert(std::make_pair(index, item));
@@ -175,4 +179,4 @@ namespace Rt2::CmdUi
         usleep(ms * 1000);
 #endif
     }
-}  // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi

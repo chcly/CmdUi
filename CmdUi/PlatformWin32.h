@@ -21,9 +21,8 @@
 */
 #pragma once
 #ifdef WIN32
-
-#include <Windows.h>
-#include "CmdUi/Platform.h"
+    #include <Windows.h>
+    #include "CmdUi/Platform.h"
 
 namespace Rt2::CmdUi
 {
@@ -43,9 +42,9 @@ namespace Rt2::CmdUi
         PlatformWin32();
         ~PlatformWin32() override;
 
-        void screenSizeHint(Point& sz) override;
+        void screenSizeHint(Vec2I& sz) override;
 
         int poll(bool block) override;
     };
-} // namespace Rt2::Ui
+}  // namespace Rt2::CmdUi
 #endif
