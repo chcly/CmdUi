@@ -53,3 +53,6 @@ endif()
 if (CmdUi_AUTO_RUN_TEST)
     run_test(${TestTargetName})
 endif()
+
+
+add_subdirectory(Samples)
