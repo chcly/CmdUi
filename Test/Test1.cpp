@@ -35,7 +35,7 @@ void CompareStreams(const Rt2::StringStream& a, Rt2::IStream& b)
 
 GTEST_TEST(CmdUi, Context_001)
 {
-    const auto plat = new Rt2::CmdUi::PlatformFile(Rt2::String(AbsTestFile("test_001.txt")));
+    const auto plat = new Rt2::CmdUi::PlatformFile(Rt2::String(TestFile("test_001.txt")));
     plat->setScreenSize(21, 5);
     const Rt2::CmdUi::Context ctx(plat);
 
@@ -54,6 +54,6 @@ GTEST_TEST(CmdUi, Context_001)
     ss << "| a^2+b^2=c^2       |\n";
     ss << "+-------------------+\n";
 
-    auto ifs = Rt2::InputFileStream(AbsTestFile("test_001.txt"));
+    auto ifs = Rt2::InputFileStream(TestFile("test_001.txt"));
     CompareStreams(ss, ifs);
 }
