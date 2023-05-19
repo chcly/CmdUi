@@ -1,6 +1,6 @@
 # CmdUi
 
-CmdUi is a basic cross platform console UI display context. The aim of this project is to
+CmdUi is a basic cross platform console UI. The aim of this project is to
 extract the UI code from the HackComputer project, test it and `possibly` develop it further.
 
 ## Testing
