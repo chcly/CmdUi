@@ -6,7 +6,7 @@ jobs:
     steps:
      - uses: actions/checkout@v3
      - name: Configure
-       run: cmake -S . -B Build -DMetaData_BUILD_TEST=ON -DMetaData_AUTO_RUN_TEST=ON
+       run: cmake -S . -B Build -DCmdUi_BUILD_TEST=ON -DCmdUi_AUTO_RUN_TEST=ON
      - name: Build
        run: cmake --build Build
        
