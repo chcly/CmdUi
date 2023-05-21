@@ -1,13 +1,11 @@
-name: Build With CMake
+name: Linux
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
      - uses: actions/checkout@v3
-
      - name: Configure
-       run: cmake -DCmdUi_BUILD_TEST=ON -DCmdUi_AUTO_RUN_TEST=ON .
-
+       run: cmake -S . -B Build -DMetaData_BUILD_TEST=ON -DMetaData_AUTO_RUN_TEST=ON
      - name: Build
-       run: make
+       run: cmake --build Build
